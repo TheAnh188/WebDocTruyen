@@ -22,11 +22,11 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
-            'avatar_path' => 'required|string',
+            'avatar_path' => 'string',
             'password' => 'required|string',
-            'role_id' => 'required|integer|exists:roles,id',
+            'role_id' => 'integer|exists:roles,id',
         ];
     }
 
@@ -40,9 +40,9 @@ class StoreUserRequest extends FormRequest
             'email.required' => 'Email là bắt buộc.',
             'email.email' => 'Email không đúng định dạng.',
             'email.unique' => 'Email đã tồn tại.',
-            'avatar_path.required' => 'Ảnh đại diện là bắt buộc.',
+            // 'avatar_path.required' => 'Ảnh đại diện là bắt buộc.',
             'password.required' => 'Mật khẩu là bắt buộc.',
-            'role_id.required' => 'Vai trò là bắt buộc.',
+            // 'role_id.required' => 'Vai trò là bắt buộc.',
             'role_id.integer' => 'Vai trò phải là số nguyên.',
             'role_id.exists' => 'Vai trò không tồn tại.',
         ];
@@ -53,9 +53,9 @@ class StoreUserRequest extends FormRequest
         $this->replace([
             'name' => $this->username,
             'email' => $this->email,
-            'avatar_path' => $this->avatarPath,
-            'password' => bcrypt($this->hashedPassword),
-            'role_id' => $this->roleId
+            'avatar_path' => $this->avatarPath ?? 'https://th.bing.com/th/id/OIP.hIWnBO3sop9nHiu1GQzNrAHaHa?rs=1&pid=ImgDetMain',
+            'password' => bcrypt($this->password),
+            'role_id' => $this->roleId ?? 3
         ]);
     }
 }

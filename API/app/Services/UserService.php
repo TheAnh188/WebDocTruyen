@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Models\User;
 use App\Services\Interfaces\UserServiceInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class UserService
@@ -28,30 +31,38 @@ class UserService implements UserServiceInterface
 
     public function findById($id)
     {
-        $users = $this->userRepository->findById($id,['id', 'name', 'email', 'avatar_path', 'is_password', 'role_id'], ['role']);
+        $users = $this->userRepository->findById($id, ['id', 'name', 'email', 'avatar_path', 'is_password', 'role_id'], ['role']);
         return $users;
     }
 
-    public function findByCondition($request) {
+    public function findByCondition($request)
+    {
         $email = $request->route('email');
         $users = $this->userRepository->findByCondition([['email', '=', $email]], ['role']);
         return $users;
     }
 
-    public function create($request) {
-        $data = $request->all(); // Lấy toàn bộ dữ liệu từ request body
-        $user = $this->userRepository->create($data);
-        return $user;
+    public function create($request)
+    {
+        DB::beginTransaction();
+        try {
+            $this->userRepository->create($request->all());
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
     }
 
-    public function update($request) {
+    public function update($request)
+    {
         $id = $request->route('user'); // Lấy ID từ URL
-        $data = $request->all();
-        $user = $this->userRepository->update($id, $data);
+        $payload = $request->all();
+        $user = $this->userRepository->update($id, $payload);
 
         return $user;
     }
-    public function delete($id) {
+    public function delete($id)
+    {
         $user = $this->userRepository->delete($id);
         return $user;
     }

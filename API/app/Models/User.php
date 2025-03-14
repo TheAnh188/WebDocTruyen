@@ -26,7 +26,11 @@ class User extends Authenticatable
         'password',
         'avatar_path',
         'is_password',
-        'role_id'
+        'role_id',
+        'google_id',
+        'facebook_id',
+        'refresh_token',
+        'access_token'
     ];
 
     /**
